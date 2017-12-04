@@ -1,0 +1,87 @@
+from jinja2 import Environment
+
+from author import Author
+from article import Article
+from journal import Journal
+
+def get_params(connection):
+    author = Author(connection)
+    article = Article(connection)
+    journal = Journal(connection)
+    params = {'Author': author, 'Article': article, 'Journal': journal}
+    return params
+
+def run(connection, **params):
+    params['Article'].create_n()
+    relationship_id = connection.gen_n()
+    params['relationship'] = relationship_id
+    params['upload_url'] = connection.vivo_url
+
+    year_id = None
+    if params['Article'].publication_year:
+        year_id = connection.gen_n()
+        params['Article'].final_check(year_id)
+        params['year'] = year_id
+
+    #make sure none of the n numbers generated before inserting triples have repeating n numbers
+    params['Article'].final_check(relationship_id)
+    params['Article'].final_check(params['Journal'].n_number)
+
+    # template data into q
+    q = Environment().from_string(u"""\
+        INSERT DATA {
+            GRAPH <http://vitro.mannlib.cornell.edu/default/vitro-kb-2> 
+            {
+                <{{upload_url}}{{ Article.n_number }}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/ontology/bibo/Letter>  .
+                <{{upload_url}}{{ Article.n_number }}> <http://www.w3.org/2000/01/rdf-schema#label> "{{ Article.name }}" .
+              
+              {%- if Article.volume %}
+                <{{upload_url}}{{ Article.n_number }}> <http://purl.org/ontology/bibo/volume> "{{ Article.volume }}" .
+              {%- endif -%}
+              
+              {%- if Article.issue %}
+                <{{upload_url}}{{ Article.n_number }}> <http://purl.org/ontology/bibo/issue> "{{ Article.issue }}" .
+              {%- endif -%}
+              
+              {%- if Article.start_page %}
+                <{{upload_url}}{{ Article.n_number }}> <http://purl.org/ontology/bibo/pageStart> "{{ Article.start_page }}" .
+              {%- endif -%}
+              
+              {%- if Article.end_page %}
+                <{{upload_url}}{{ Article.n_number }}> <http://purl.org/ontology/bibo/pageEnd> "{{ Article.end_page }}" .
+              {%- endif -%}
+
+              {%- if Article.publication_year %}
+                <{{upload_url}}{{ Article.n_number }}> <http://vivoweb.org/ontology/core#dateTimeValue> <{{upload_url}}{{ year }}> .
+                <{{upload_url}}{{ year }}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vivoweb.org/ontology/core#DateTimeValue> .
+                <{{upload_url}}{{ year }}> <http://vivoweb.org/ontology/core#dateTime> "{{ Article.publication_year }}-01-01T00:00:00" .
+                <{{upload_url}}{{ year }}> <http://vivoweb.org/ontology/core#dateTimePrecision> <http://vivoweb.org/ontology/core#yearPrecision> .
+              {%- endif -%}
+
+              {%- if Article.doi %}
+                <{{upload_url}}{{Article.n_number}}> <http://purl.org/ontology/bibo/doi> "{{ Article.doi }}" .
+              {%- endif -%}
+
+              {%- if Article.pubmed_id %}
+                <{{upload_url}}{{Article.n_number}}> <http://purl.org/ontology/bibo/pmid> "{{ Article.pubmed_id }}" .
+              {%- endif -%}
+              
+              {%- if Author.n_number %}
+                <{{upload_url}}{{ relationship }}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vivoweb.org/ontology/core#Authorship>  .
+                <{{upload_url}}{{ relationship }}> <http://vivoweb.org/ontology/core#relates> <{{upload_url}}{{ Article.n_number }}> .
+                <{{upload_url}}{{ relationship }}> <http://vivoweb.org/ontology/core#relates> <{{upload_url}}{{ Author.n_number }}> .
+                <{{upload_url}}{{ Article.n_number }}> <http://vivoweb.org/ontology/core#relatedBy> <{{upload_url}}{{ relationship }}> .
+              {%- endif -%}
+              
+              {%- if Journal.n_number %}
+                <{{upload_url}}{{ Article.n_number }}> <http://vivoweb.org/ontology/core#hasPublicationVenue> <{{upload_url}}{{ Journal.n_number }}> .
+                <{{upload_url}}{{ Journal.n_number }}> <http://vivoweb.org/ontology/core#publicationVenueFor> <{{upload_url}}{{ Article.n_number }}> .
+              {%- endif %}
+            }
+        }
+        """)
+
+    # send data to vivo
+    print('=' * 20 + "\nAdding letter with pre-existing author\n" + '=' * 20)
+    response = connection.run_update(q.render(**params))
+    return response

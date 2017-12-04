@@ -1,0 +1,16 @@
+Takahashi, Fumiaki has possible uris: 
+[u'n3643390306', u'n5393']
+Takahashi, Fumiaki has possible uris: 
+[u'http://localhost:8080/vivo/display/n3643390306', u'http://localhost:8080/vivo/display/n5393']
+Takahashi, Fumiaki has possible uris: 
+[u'http://localhost:8080/vivo/display/n3643390306', u'http://localhost:8080/vivo/display/n5393']
+Takahashi, Fumiaki has possible uris: 
+[u'http://localhost:8080/vivo/display/n3643390306', u'http://localhost:8080/vivo/display/n5393']
+Takahashi, Fumiaki has possible uris: 
+[u'http://localhost:8080/vivo/display/n3643390306', u'http://localhost:8080/vivo/display/n5393']
+Takahashi, Fumiaki has possible uris: 
+[u'http://localhost:8080/vivo/display/n3643390306', u'http://localhost:8080/vivo/display/n5393']
+Takahashi, Fumiaki has possible uris: 
+[u'http://localhost:8080/vivo/display/n3643390306', u'http://localhost:8080/vivo/display/n5393']
+Takahashi, Fumiaki has possible uris: 
+[u'http://localhost:8080/vivo/display/n3643390306', u'http://localhost:8080/vivo/display/n5393', u'http://localhost:8080/vivo/display/n80512228']

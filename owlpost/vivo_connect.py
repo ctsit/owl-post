@@ -1,40 +1,31 @@
 import random
 import requests
-import urllib
 
-from queries import check_n_value
-from thing import Thing
+from vivo_queries.queries import check_n_value
+from vivo_queries.vdos.thing import Thing
 
 class Connection(object):
-    def __init__(self, vivo_url, check_url, user, password, u_endpoint, q_endpoint):
+    def __init__(self, vivo_url, user, password, u_endpoint, q_endpoint):
         self.user = user
         self.password = password
         self.update_endpoint = u_endpoint
         self.query_endpoint = q_endpoint
         self.vivo_url = vivo_url
-        self.check_url = check_url
-        '''res = requests.get(vivo_url)
-        if res.code == 200:
-            # we good
-            self.vivo_url = vivo_url + 'individual/'
-            pass
-        else:
-            exit('your vivo url is wrong')'''
+        self.n_list = []
 
     def check_n(self, n):
-        # call to vivo, see if n number exists
-        '''url = self.check_url + n
-        page = requests.get(url).text
-        title = page[page.find('<title>') + 7 : page.find('</title>')]
-        return title == 'Individual Not Found'
-        '''
-
         #create a Thing to test n number
         thing_check = Thing(self)
-        thing_check.n_num = n
+        thing_check.n_number = n
+        thing_check.type = 'thing'
         params = {'Thing': thing_check}
         #use query to check if n number exists
         response = check_n_value.run(self, **params)
+        if not response:
+            if n in self.n_list:
+                response = True
+            else:
+                self.n_list.append(n) #n is probably being used, so add to n_list to prevent duplicate n
         return response
 
     def gen_n(self):
@@ -53,9 +44,9 @@ class Connection(object):
             'password': self.password,
             'update': template
         }
-        data = urllib.urlencode(payload)
-        response = urllib.urlopen(self.update_endpoint, data)
-        return response.code
+        url = self.update_endpoint
+        response = requests.post(url, params=payload)
+        return response
 
     def run_query(self, template):
         print("Query:\n" + template)
@@ -67,13 +58,4 @@ class Connection(object):
         url = self.query_endpoint
         headers = {'Accept': 'application/sparql-results+json'}
         response = requests.get(url, params=payload, headers=headers)
-        
-        #test = journal_dump['results']['bindings'][0]['label']['value']
-        #print(test)
-        #j = json.load(r)
-        #print(j)
-        
-        #response = os.system("curl -i -d 'email={}' -d 'password={}' -d 'query={}' -H 'Accept: application/sparql-results+json' '{}' >> practice".format(self.user, self.password, template, self.query_endpoint))
-        #with open('practice', 'w') as file:
-         #   json.dump(response, file)
         return response

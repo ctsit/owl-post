@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/macos,python
 
 ### macOS ###
@@ -118,6 +117,7 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
+p3env/
 
 # Spyder project settings
 .spyderproject
@@ -133,3 +133,8 @@ ENV/
 
 the_past/
 practice
+data_in/*
+owlpost/data_out/*
+config.yaml
+wos_config.yaml
+deleteme.py

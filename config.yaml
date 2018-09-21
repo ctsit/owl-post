@@ -1,8 +1,0 @@
-email: 'vivo_root@school.edu'
-password: 'FreeLunch'
-
-update_endpoint: 'http://localhost:8080/vivo/api/sparqlUpdate'
-query_endpoint: 'http://localhost:8080/vivo/api/sparqlQuery'
-
-checking_url: 'http://localhost:8080/vivo/display/'
-upload_url: 'http://vivo.school.edu/individual/'

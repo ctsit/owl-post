@@ -1,11 +1,21 @@
 * Allow user to make new queries (and add them to option dictionary)
 
-* Integrate Jinja2
+* Add util file for fixing label from <> to ""
 
-* Remove existence parameter from author and article
+* If two entites are merged (even without the api), they have two vcards. Choose between: delete one or have get_cvard query return only the first
+
+* Turn make_academic_article into generic make_publication with way to select publication type
+
+* Deal with labels that have quotation marks in them
+
+* Add keywords to new publications (from WOS categories)
 
 ---------------------------------------------------
 
 # Complete
 
 * Have check_n use queries to check if n number exists
+
+* Integrate Jinja2
+
+* Remove existence parameter from author and article

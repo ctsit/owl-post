@@ -1,0 +1,14 @@
+bibtexparser==0.6.2
+biopython==1.70
+certifi==2017.11.5
+chardet==3.0.4
+docopt==0.6.2
+idna==2.6
+Jinja2==2.10
+MarkupSafe==1.0
+numpy==1.14.0
+PyYAML==3.12
+requests==2.18.4
+urllib3==1.22
+mysql-connector-python
+-e git+https://github.com/naomidb/vivo_queries.git@develop#egg=vivo_queries
